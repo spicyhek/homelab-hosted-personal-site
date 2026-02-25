@@ -1,0 +1,4 @@
+cloudflared/credentials.json
+cloudflared/cert.pem
+.env
+*.log
