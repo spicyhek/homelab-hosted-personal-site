@@ -7,12 +7,33 @@ services:
       - "8080:80"
     volumes:
       - ./site:/usr/share/nginx/html:ro
+    networks: 
+      - homelab
 
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
     restart: unless-stopped
-    network_mode: host
     volumes:
       - ./cloudflared:/etc/cloudflared:ro
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks: 
+      - homelab
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes: 
+      - uptime-kuma:/app/data
+    networks:
+      - homelab
+
+volumes:
+    uptime-kuma:
+
+networks:
+  homelab:
+    driver: bridge  
