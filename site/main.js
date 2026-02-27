@@ -1,3 +1,6 @@
+const CHECK_TIMEOUT_MS = 8000;
+const RECHECK_INTERVAL_MS = 60000;
+
 const SERVER_COLORS = [
   { color: "#2563eb", bg: "#eff6ff" },
   { color: "#7c3aed", bg: "#f5f3ff" },
@@ -6,9 +9,6 @@ const SERVER_COLORS = [
   { color: "#dc2626", bg: "#fef2f2" },
   { color: "#0891b2", bg: "#ecfeff" },
 ];
-
-const CHECK_TIMEOUT_MS = 8000;
-const RECHECK_INTERVAL_MS = 60000;
 
 function hashName(name) {
   let h = 0;
@@ -36,10 +36,13 @@ fetch("/server-id.json")
     badge.classList.add("visible");
   });
 
-function checkServer(url) {
+function checkServer(host) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
-  return fetch(url, { method: "GET", signal: controller.signal, cache: "no-store" })
+  return fetch(`/health-check?target=${encodeURIComponent(host)}`, {
+    signal: controller.signal,
+    cache: "no-store",
+  })
     .then((r) => {
       clearTimeout(timeout);
       return r.ok;
@@ -50,11 +53,6 @@ function checkServer(url) {
     });
 }
 
-function setPillStatus(pill, up) {
-  pill.className = `status-pill status-pill--${up ? "up" : "down"} visible`;
-  pill.setAttribute("aria-label", `${pill.querySelector(".status-pill-name")?.textContent || "Server"}: ${up ? "up" : "down"}`);
-}
-
 function renderServerPills(servers) {
   const list = document.getElementById("server-status-list");
   if (!list || !Array.isArray(servers)) return;
@@ -63,11 +61,11 @@ function renderServerPills(servers) {
     const pill = document.createElement("div");
     pill.className = "status-pill status-pill--checking visible";
     pill.setAttribute("aria-label", `${server.name}: checking`);
-    pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name || "Unknown")}</span>`;
+    pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name)}</span>`;
     list.appendChild(pill);
-    const url = server.url || "/";
-    checkServer(url).then((up) => {
-      setPillStatus(pill, up);
+    checkServer(server.host).then((up) => {
+      pill.className = `status-pill status-pill--${up ? "up" : "down"} visible`;
+      pill.setAttribute("aria-label", `${server.name}: ${up ? "up" : "down"}`);
     });
   });
 }
