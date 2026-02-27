@@ -61,6 +61,18 @@ services:
     networks:
       - homelab
 
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    ports:
+      - "9093:9093"
+    networks:
+      - homelab
+
 volumes:
     uptime-kuma:
     grafana-data:
