@@ -1,0 +1,83 @@
+const SERVER_COLORS = [
+  { color: "#2563eb", bg: "#eff6ff" },
+  { color: "#7c3aed", bg: "#f5f3ff" },
+  { color: "#059669", bg: "#ecfdf5" },
+  { color: "#d97706", bg: "#fffbeb" },
+  { color: "#dc2626", bg: "#fef2f2" },
+  { color: "#0891b2", bg: "#ecfeff" },
+];
+
+const CHECK_TIMEOUT_MS = 8000;
+const RECHECK_INTERVAL_MS = 60000;
+
+function hashName(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) {
+    h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+fetch("/server-id.json")
+  .then((r) => r.json())
+  .then((data) => {
+    const name = data.name || "Unknown";
+    const palette = SERVER_COLORS[hashName(name) % SERVER_COLORS.length];
+    const badge = document.getElementById("server-badge");
+    badge.style.setProperty("--server-color", palette.color);
+    badge.style.setProperty("--server-bg", palette.bg);
+    document.getElementById("server-name").textContent = name;
+    badge.classList.add("visible");
+  });
+
+function checkServer(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
+  return fetch(url, { method: "GET", signal: controller.signal, cache: "no-store" })
+    .then((r) => {
+      clearTimeout(timeout);
+      return r.ok;
+    })
+    .catch(() => {
+      clearTimeout(timeout);
+      return false;
+    });
+}
+
+function setPillStatus(pill, up) {
+  pill.className = `status-pill status-pill--${up ? "up" : "down"} visible`;
+  pill.setAttribute("aria-label", `${pill.querySelector(".status-pill-name")?.textContent || "Server"}: ${up ? "up" : "down"}`);
+}
+
+function renderServerPills(servers) {
+  const list = document.getElementById("server-status-list");
+  if (!list || !Array.isArray(servers)) return;
+  list.innerHTML = "";
+  servers.forEach((server) => {
+    const pill = document.createElement("div");
+    pill.className = "status-pill status-pill--checking visible";
+    pill.setAttribute("aria-label", `${server.name}: checking`);
+    pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name || "Unknown")}</span>`;
+    list.appendChild(pill);
+    const url = server.url || "/";
+    checkServer(url).then((up) => {
+      setPillStatus(pill, up);
+    });
+  });
+}
+
+function runServerChecks() {
+  fetch("/servers.json")
+    .then((r) => r.json())
+    .then(renderServerPills)
+    .catch(() => {});
+}
+
+runServerChecks();
+setInterval(runServerChecks, RECHECK_INTERVAL_MS);

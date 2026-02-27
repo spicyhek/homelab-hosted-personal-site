@@ -1,0 +1,167 @@
+:root {
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, -system-ui,
+    "Segoe UI", sans-serif;
+  background-color: #ffffff;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page {
+  width: 100%;
+  max-width: 720px;
+  padding: 3rem 1.5rem;
+}
+
+.card {
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  padding: 2.5rem 2rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 0.75rem;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 3vw, 2.75rem);
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 1.75rem;
+}
+
+.server-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--server-color, #d1d5db);
+  background: var(--server-bg, #f9fafb);
+  color: var(--server-color, #6b7280);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.server-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.server-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--server-color, #6b7280);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.server-status-label {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.server-status-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.status-pill.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.status-pill--checking {
+  border-color: #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+.status-pill--checking .status-dot {
+  background: #9ca3af;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-pill--up {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.status-pill--up .status-dot {
+  background: #059669;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.status-pill--down {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.status-pill--down .status-dot {
+  background: #dc2626;
+  opacity: 0.6;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+}

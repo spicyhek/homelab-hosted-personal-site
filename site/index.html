@@ -4,104 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>brendanmanley.com</title>
-    <style>
-      :root {
-        color-scheme: light;
-      }
-
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, system-ui, -system-ui,
-          "Segoe UI", sans-serif;
-        background-color: #ffffff;
-        color: #111827;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .page {
-        width: 100%;
-        max-width: 720px;
-        padding: 3rem 1.5rem;
-      }
-
-      .card {
-        border-radius: 1rem;
-        border: 1px solid #e5e7eb;
-        background: #ffffff;
-        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
-        padding: 2.5rem 2rem;
-      }
-
-      .eyebrow {
-        font-size: 0.75rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #9ca3af;
-        margin-bottom: 0.75rem;
-      }
-
-      h1 {
-        font-size: clamp(2.25rem, 3vw, 2.75rem);
-        line-height: 1.1;
-        margin: 0 0 0.75rem;
-      }
-
-      .muted {
-        color: #6b7280;
-        font-size: 0.95rem;
-        margin: 0 0 1.75rem;
-      }
-
-      .server-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.85rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        border: 1px solid var(--server-color, #d1d5db);
-        background: var(--server-bg, #f9fafb);
-        color: var(--server-color, #6b7280);
-        opacity: 0;
-        transform: translateY(4px);
-        transition: opacity 0.4s ease, transform 0.4s ease;
-      }
-
-      .server-badge.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .server-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--server-color, #6b7280);
-        animation: pulse 2.5s ease-in-out infinite;
-      }
-
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.45; }
-      }
-
-      @media (max-width: 600px) {
-        .card {
-          padding: 2rem 1.5rem;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="page" aria-label="Personal landing page">
@@ -112,38 +15,11 @@
           <span class="server-dot"></span>
           <span id="server-name"></span>
         </div>
+        <p class="muted server-status-label">Server status</p>
+        <div class="server-status-list" id="server-status-list" aria-label="Server status"></div>
       </section>
     </main>
 
-    <script>
-      const SERVER_COLORS = [
-        { color: "#2563eb", bg: "#eff6ff" },
-        { color: "#7c3aed", bg: "#f5f3ff" },
-        { color: "#059669", bg: "#ecfdf5" },
-        { color: "#d97706", bg: "#fffbeb" },
-        { color: "#dc2626", bg: "#fef2f2" },
-        { color: "#0891b2", bg: "#ecfeff" },
-      ];
-
-      function hashName(name) {
-        let h = 0;
-        for (let i = 0; i < name.length; i++) {
-          h = ((h << 5) - h + name.charCodeAt(i)) | 0;
-        }
-        return Math.abs(h);
-      }
-
-      fetch("/server-id.json")
-        .then((r) => r.json())
-        .then((data) => {
-          const name = data.name || "Unknown";
-          const palette = SERVER_COLORS[hashName(name) % SERVER_COLORS.length];
-          const badge = document.getElementById("server-badge");
-          badge.style.setProperty("--server-color", palette.color);
-          badge.style.setProperty("--server-bg", palette.bg);
-          document.getElementById("server-name").textContent = name;
-          badge.classList.add("visible");
-        });
-    </script>
+    <script src="main.js"></script>
   </body>
 </html>
