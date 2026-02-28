@@ -42,11 +42,10 @@ function checkServer(host) {
   return fetch(`/health-check?target=${encodeURIComponent(host)}`, {
     signal: controller.signal,
     cache: "no-store",
-    redirect: "manual",
   })
     .then((r) => {
       clearTimeout(timeout);
-      return r.type === "opaqueredirect" || r.status < 500;
+      return r.ok;
     })
     .catch(() => {
       clearTimeout(timeout);
@@ -62,12 +61,11 @@ function renderServerPills(servers) {
     const pill = document.createElement("div");
     pill.className = "status-pill status-pill--checking visible";
     pill.setAttribute("aria-label", `${server.name}: checking`);
-    pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name)}</span><span class="status-icon"></span>`;
+    pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name)}</span>`;
     list.appendChild(pill);
     checkServer(server.host).then((up) => {
       pill.className = `status-pill status-pill--${up ? "up" : "down"} visible`;
       pill.setAttribute("aria-label", `${server.name}: ${up ? "up" : "down"}`);
-      pill.querySelector(".status-icon").textContent = up ? "\u2713" : "\u2717";
     });
   });
 }
