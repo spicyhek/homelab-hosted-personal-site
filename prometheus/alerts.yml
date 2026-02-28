@@ -1,0 +1,11 @@
+groups:
+  - name: system-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance is down"
+          description: "Prometheus target is no longer responding, do something!!"
