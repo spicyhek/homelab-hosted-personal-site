@@ -73,6 +73,15 @@ services:
     networks:
       - homelab
 
+  alertmanager-discord:
+    build: ./alertmanager/alertmanager-discord
+    container_name: alertmanager-discord
+    restart: unless-stopped
+    environment:
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    networks:
+      - homelab
+
 volumes:
     uptime-kuma:
     grafana-data:
