@@ -71,7 +71,7 @@ function renderServerPills(servers) {
 }
 
 function runServerChecks() {
-  fetch("/servers.json")
+  fetch("/servers.json", { cache: "no-store" })
     .then((r) => r.json())
     .then(renderServerPills)
     .catch(() => {});
