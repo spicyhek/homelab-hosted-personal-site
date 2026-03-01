@@ -8,23 +8,103 @@
   </head>
   <body>
     <main class="page" aria-label="Personal landing page">
-      <section class="card">
-        <h1>Hi, I'm Brendan</h1>
-        <p class="subtitle">Hosted from my homelab</p>
-        <div class="server-badge" id="server-badge" aria-label="Serving node">
-          <span class="server-dot"></span>
-          <span>Hosted by: <span id="server-name"></span></span>
+      <section class="layout-shell">
+        <header class="topbar">
+          <a class="brand" href="/" aria-label="Homepage">brendanmanley.com</a>
+          <nav class="topnav" aria-label="Primary navigation">
+            <a href="#" aria-current="page">home</a>
+            <a href="#">about</a>
+            <a href="#">projects</a>
+            <a href="#">contact</a>
+          </nav>
+        </header>
+
+        <section class="hero">
+          <article class="panel intro-panel" aria-labelledby="intro-title">
+            <h1 id="intro-title">Intro</h1>
+            <p>
+              I'm Brendan. This site is hosted from my homelab, where I build and
+              run projects, services, and experiments.
+            </p>
+            <p class="subtitle">
+              Welcome to my webpage.
+            </p>
+            <div class="intro-actions" aria-label="Social and resume links">
+              <a
+                class="cta-button cta-button--icon cta-button--disabled"
+                aria-label="GitHub profile (coming soon)"
+                aria-disabled="true"
+                tabindex="-1"
+              >
+                <img
+                  class="cta-icon cta-icon-image"
+                  src="assets/github-logo.png"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </a
+              >
+              <a
+                class="cta-button cta-button--icon cta-button--disabled"
+                aria-label="LinkedIn profile (coming soon)"
+                aria-disabled="true"
+                tabindex="-1"
+              >
+                <img
+                  class="cta-icon cta-icon-image"
+                  src="assets/linkedin-logo.png"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </a
+              >
+              <a
+                class="cta-button cta-button--resume cta-button--disabled"
+                aria-label="Resume download (coming soon)"
+                aria-disabled="true"
+                tabindex="-1"
+                >Download Resume</a
+              >
+            </div>
+          </article>
+
+          <aside class="panel photo-panel" aria-label="Portrait photo">
+            <img
+              src="assets/profile.png"
+              alt="Portrait photo of Brendan Manley"
+              class="profile-photo"
+            />
+          </aside>
+        </section>
+
+        <section class="panel projects-panel" aria-labelledby="projects-title">
+          <h2 id="projects-title">Projects</h2>
+          <p>Project highlights coming soon.</p>
+        </section>
+
+        <section class="panel status-panel" aria-labelledby="status-title">
+          <div class="status-heading-row">
+            <h2 id="status-title">Server status</h2>
+            <div class="server-badge" id="server-badge" aria-label="Serving node">
+              <span class="server-dot"></span>
+              <span>Hosted by: <span id="server-name"></span></span>
+            </div>
+          </div>
+          <div
+            class="server-status-list"
+            id="server-status-list"
+            aria-label="Server status"
+          ></div>
+        </section>
+
+        <div class="pixel-party" aria-hidden="true">
+          <span class="pixel-character char-one"></span>
+          <span class="pixel-character char-two"></span>
+          <span class="pixel-character char-three"></span>
         </div>
-        <hr class="divider" />
-        <p class="server-status-label">Service status</p>
-        <div
-          class="server-status-list"
-          id="server-status-list"
-          aria-label="Server status"
-        ></div>
       </section>
     </main>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=5"></script>
   </body>
 </html>

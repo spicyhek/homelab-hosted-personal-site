@@ -1,5 +1,7 @@
 const CHECK_TIMEOUT_MS = 8000;
 const RECHECK_INTERVAL_MS = 60000;
+const PHOTO_ROTATE_INTERVAL_MS = 5000;
+const PHOTO_FADE_MS = 260;
 
 const SERVER_COLORS = [
   { color: "#2563eb", bg: "#eff6ff" },
@@ -30,9 +32,11 @@ fetch("/server-id.json")
     const name = data.name || "Unknown";
     const palette = SERVER_COLORS[hashName(name) % SERVER_COLORS.length];
     const badge = document.getElementById("server-badge");
+    const serverName = document.getElementById("server-name");
+    if (!badge || !serverName) return;
     badge.style.setProperty("--server-color", palette.color);
     badge.style.setProperty("--server-bg", palette.bg);
-    document.getElementById("server-name").textContent = name;
+    serverName.textContent = name;
     badge.classList.add("visible");
   });
 
@@ -71,11 +75,79 @@ function renderServerPills(servers) {
 }
 
 function runServerChecks() {
+  const list = document.getElementById("server-status-list");
+  if (!list) return;
   fetch("/servers.json", { cache: "no-store" })
     .then((r) => r.json())
     .then(renderServerPills)
-    .catch(() => {});
+    .catch(() => {
+      list.innerHTML =
+        '<div class="status-pill status-pill--down visible"><span class="status-dot"></span><span class="status-pill-name">Unable to load server list</span></div>';
+    });
+}
+
+function initPhotoRotation() {
+  const photo = document.querySelector(".profile-photo");
+  if (!photo) return;
+
+  const frames = [
+    {
+      src: "assets/profile.png",
+      alt: "Portrait photo of Brendan Manley",
+    },
+    {
+      src: "assets/profile-alt-1.png",
+      alt: "Brendan at an anime event display",
+    },
+    {
+      src: "assets/profile-alt-2.png",
+      alt: "Brendan in cosplay at a convention center",
+    },
+  ];
+
+  frames.forEach((frame) => {
+    const preload = new Image();
+    preload.src = frame.src;
+  });
+
+  function resolveCurrentIndex() {
+    const currentSrc = photo.getAttribute("src") || "";
+    const matchIndex = frames.findIndex((frame) => currentSrc.includes(frame.src));
+    return matchIndex >= 0 ? matchIndex : 0;
+  }
+
+  let current = resolveCurrentIndex();
+  let rotating = false;
+
+  function showFrame(index) {
+    photo.src = frames[index].src;
+    photo.alt = frames[index].alt;
+    photo.classList.remove("is-fading");
+    current = index;
+    rotating = false;
+  }
+
+  function rotateToNext() {
+    if (rotating) return;
+    rotating = true;
+    const next = (current + 1) % frames.length;
+    photo.classList.add("is-fading");
+
+    // Load the next image first, then swap; if it fails, skip forward.
+    const nextImage = new Image();
+    nextImage.onload = () => {
+      setTimeout(() => showFrame(next), PHOTO_FADE_MS);
+    };
+    nextImage.onerror = () => {
+      const fallback = (next + 1) % frames.length;
+      setTimeout(() => showFrame(fallback), PHOTO_FADE_MS);
+    };
+    nextImage.src = frames[next].src;
+  }
+
+  window.setInterval(rotateToNext, PHOTO_ROTATE_INTERVAL_MS);
 }
 
 runServerChecks();
 setInterval(runServerChecks, RECHECK_INTERVAL_MS);
+initPhotoRotation();
