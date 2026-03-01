@@ -63,6 +63,14 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - homelab
+    environment:
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: "smtp.gmail.com:587"
+      GF_SMTP_USER: "${SMTP_USER}"
+      GF_SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      GF_SMTP_FROM_ADDRESS: "${SMTP_FROM_ADDRESS}"
+      GF_SMTP_FROM_NAME: "Grafana"
+      GF_SMTP_STARTTLS_POLICY: "MandatoryStartTLS"
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -75,6 +83,10 @@ services:
       - "9093:9093"
     networks:
       - homelab
+    environment:
+      SMTP_USER: "${SMTP_USER}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_FROM_ADDRESS: "${SMTP_FROM_ADDRESS}"
 
   alertmanager-discord:
     build: ./alertmanager/alertmanager-discord
