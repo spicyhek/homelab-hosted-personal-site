@@ -93,15 +93,15 @@ function initPhotoRotation() {
   const frames = [
     {
       src: "assets/profile.png",
-      alt: "Portrait photo of Brendan Manley",
+      alt: "",
     },
     {
       src: "assets/profile-alt-1.png",
-      alt: "Brendan at an anime event display",
+      alt: "",
     },
     {
       src: "assets/profile-alt-2.png",
-      alt: "Brendan in cosplay at a convention center",
+      alt: "",
     },
   ];
 
