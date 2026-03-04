@@ -23,7 +23,7 @@
           <article class="panel intro-panel" aria-labelledby="intro-title">
             <h1 id="intro-title">Intro</h1>
             <p>
-              I'm Brendan. This site is hosted from my homelab, where I build and
+              Hi! I'm Brendan. This site is hosted from my homelab, where I build and
               run projects, services, and learn about infrastructure and platform engineering.
             </p>
             <p class="subtitle">
@@ -79,7 +79,51 @@
 
         <section class="panel projects-panel" aria-labelledby="projects-title">
           <h2 id="projects-title">Projects</h2>
-          <p>Project highlights coming soon.</p>
+
+          <article class="project-entry">
+            <h3 class="project-entry-title">Personal Site Observability Platform</h3>
+            <p>
+              This site runs on a Raspberry Pi homelab that I put together.
+              Every piece of the stack is containerized, monitored, and
+              designed to stay up with as little intervention as possible.
+            </p>
+            <p>
+              <strong>Infrastructure -</strong> 
+              Everything runs in containers, so the whole
+              environment is reproducible and each service is isolated from
+              the rest. If one container goes down, it doesn't take the
+              others down with it.
+            </p>
+            <p>
+              <strong>Security -</strong>              Traffic reaches the server through a Cloudflare Tunnel, which
+              means there are zero public-facing ports. That zero-trust
+              model has blocked over a hundred attempted network
+              intrusions so far.
+            </p>
+            <p>
+              <strong>Observability -</strong> 
+              Prometheus scrapes metrics from every service, Grafana turns
+              those numbers into dashboards I can read, and Loki
+              aggregates logs so I can search across containers in one place.
+            </p>
+            <p>
+              <strong>Alerting -</strong> 
+              Alertmanager and Blackbox Exporter probe the site from the
+              inside and outside. If something goes down, I know about it
+              within a minute, which is how uptime stays above 99.9%
+              weekly.
+            </p>
+            <div class="tech-tags" aria-label="Tech stack">
+              <span class="tech-tag">Ubuntu Server</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">Prometheus</span>
+              <span class="tech-tag">Grafana</span>
+              <span class="tech-tag">Alertmanager</span>
+              <span class="tech-tag">Loki</span>
+              <span class="tech-tag">Nginx</span>
+              <span class="tech-tag">Git</span>
+            </div>
+          </article>
         </section>
 
         <section class="panel status-panel" aria-labelledby="status-title">

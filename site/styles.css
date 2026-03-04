@@ -325,8 +325,59 @@ body::after {
   margin: 0 1rem 1rem;
 }
 
-.projects-panel p {
+.project-entry {
+  border: 2px solid rgba(66, 208, 242, 0.2);
+  background: rgba(10, 16, 38, 0.6);
+  padding: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-entry:last-child {
+  margin-bottom: 0;
+}
+
+.project-entry-title {
+  margin: 0 0 0.75rem;
+  color: var(--text-main);
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.project-entry-title::before {
+  content: "> ";
+  color: var(--line-cyan);
+}
+
+.projects-panel .project-entry p {
   color: var(--text-muted);
+}
+
+.projects-panel .project-entry p strong {
+  color: var(--line-cyan);
+  text-transform: uppercase;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.44rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--line-cyan);
+  border: 2px solid rgba(66, 208, 242, 0.4);
+  background: rgba(18, 30, 56, 0.85);
+  text-shadow: 0 0 6px rgba(66, 208, 242, 0.3);
 }
 
 .status-heading-row {
@@ -573,6 +624,10 @@ body::after {
   .projects-panel h2,
   .status-panel h2 {
     font-size: 0.72rem;
+  }
+
+  .project-entry-title {
+    font-size: 0.54rem;
   }
 
   .intro-actions {
