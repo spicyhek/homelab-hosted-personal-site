@@ -17,6 +17,9 @@ ingester:
         store: inmemory
       replication_factor: 1
 
+limits_config:
+  retention_period: 168h
+
 schema_config:
   configs:
     - from: 2024-01-01
