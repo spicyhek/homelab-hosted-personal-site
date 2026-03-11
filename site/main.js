@@ -1,4 +1,4 @@
-const CHECK_TIMEOUT_MS = 8000;
+const STATUS_ENDPOINT = "/api/status";
 const RECHECK_INTERVAL_MS = 60000;
 const PHOTO_ROTATE_INTERVAL_MS = 5000;
 const PHOTO_FADE_MS = 260;
@@ -26,63 +26,57 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-fetch("/server-id.json")
-  .then((r) => r.json())
-  .then((data) => {
-    const name = data.name || "Unknown";
-    const palette = SERVER_COLORS[hashName(name) % SERVER_COLORS.length];
-    const badge = document.getElementById("server-badge");
-    const serverName = document.getElementById("server-name");
-    if (!badge || !serverName) return;
-    badge.style.setProperty("--server-color", palette.color);
-    badge.style.setProperty("--server-bg", palette.bg);
-    serverName.textContent = name;
-    badge.classList.add("visible");
-  });
+function showServingNode(name) {
+  const resolvedName = name || "Unknown";
+  const palette = SERVER_COLORS[hashName(resolvedName) % SERVER_COLORS.length];
+  const badge = document.getElementById("server-badge");
+  const serverName = document.getElementById("server-name");
+  if (!badge || !serverName) return;
+  badge.style.setProperty("--server-color", palette.color);
+  badge.style.setProperty("--server-bg", palette.bg);
+  serverName.textContent = resolvedName;
+  badge.classList.add("visible");
+}
 
-function checkServer(host) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
-  return fetch(`/health-check?target=${encodeURIComponent(host)}`, {
-    signal: controller.signal,
-    cache: "no-store",
-  })
-    .then((r) => {
-      clearTimeout(timeout);
-      return r.ok;
-    })
-    .catch(() => {
-      clearTimeout(timeout);
-      return false;
-    });
+function showServerListMessage(message) {
+  const list = document.getElementById("server-status-list");
+  if (!list) return;
+  list.innerHTML = `<div class="status-pill status-pill--down visible"><span class="status-dot"></span><span class="status-pill-name">${escapeHtml(message)}</span></div>`;
 }
 
 function renderServerPills(servers) {
   const list = document.getElementById("server-status-list");
   if (!list || !Array.isArray(servers)) return;
   list.innerHTML = "";
+  if (servers.length === 0) {
+    showServerListMessage("No monitored sites configured");
+    return;
+  }
   servers.forEach((server) => {
+    const isUp = Boolean(server.up);
     const pill = document.createElement("div");
-    pill.className = "status-pill status-pill--checking visible";
-    pill.setAttribute("aria-label", `${server.name}: checking`);
+    pill.className = `status-pill status-pill--${isUp ? "up" : "down"} visible`;
+    pill.setAttribute("aria-label", `${server.name}: ${isUp ? "up" : "down"}`);
     pill.innerHTML = `<span class="status-dot"></span><span class="status-pill-name">${escapeHtml(server.name)}</span>`;
     list.appendChild(pill);
-    checkServer(server.host).then((up) => {
-      pill.className = `status-pill status-pill--${up ? "up" : "down"} visible`;
-      pill.setAttribute("aria-label", `${server.name}: ${up ? "up" : "down"}`);
-    });
   });
 }
 
 function runServerChecks() {
-  const list = document.getElementById("server-status-list");
-  if (!list) return;
-  fetch("/servers.json", { cache: "no-store" })
-    .then((r) => r.json())
-    .then(renderServerPills)
+  fetch(STATUS_ENDPOINT, { cache: "no-store" })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Status API returned ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      showServingNode(data.servedBy);
+      renderServerPills(data.sites);
+    })
     .catch(() => {
-      list.innerHTML =
-        '<div class="status-pill status-pill--down visible"><span class="status-dot"></span><span class="status-pill-name">Unable to load server list</span></div>';
+      showServingNode("Unavailable");
+      showServerListMessage("Unable to load server status");
     });
 }
 
