@@ -29,12 +29,13 @@
             <p class="subtitle">
               Welcome to my webpage.
             </p>
-            <div class="intro-actions" aria-label="Social and resume links">
+            <div class="intro-actions" aria-label="Social links">
               <a
-                class="cta-button cta-button--icon cta-button--disabled"
-                aria-label="GitHub profile (coming soon)"
-                aria-disabled="true"
-                tabindex="-1"
+                class="cta-button cta-button--icon"
+                href="https://github.com/spicyhek"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub profile"
               >
                 <img
                   class="cta-icon cta-icon-image"
@@ -45,10 +46,11 @@
               </a
               >
               <a
-                class="cta-button cta-button--icon cta-button--disabled"
-                aria-label="LinkedIn profile (coming soon)"
-                aria-disabled="true"
-                tabindex="-1"
+                class="cta-button cta-button--icon"
+                href="https://www.linkedin.com/in/brendan-manley/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn profile"
               >
                 <img
                   class="cta-icon cta-icon-image"
@@ -57,13 +59,6 @@
                   aria-hidden="true"
                 />
               </a
-              >
-              <a
-                class="cta-button cta-button--resume cta-button--disabled"
-                aria-label="Resume download (coming soon)"
-                aria-disabled="true"
-                tabindex="-1"
-                >Download Resume</a
               >
             </div>
           </article>
@@ -122,6 +117,73 @@
               <span class="tech-tag">Loki</span>
               <span class="tech-tag">Nginx</span>
               <span class="tech-tag">Git</span>
+            </div>
+          </article>
+
+          <article class="project-entry">
+            <h3 class="project-entry-title">Kubernetes Homelab Platform</h3>
+            <p>
+              Migrated my single-node platform to a highly available k3s cluster,
+              improving fault tolerance and cutting service downtime by 60%
+              compared to the previous deployment.
+            </p>
+            <p>
+              <strong>Automation -</strong>
+              Automated Kubernetes deployments with ArgoCD using a GitOps workflow,
+              which reduced manual rollouts and made infrastructure changes more reliable.
+            </p>
+            <p>
+              <strong>CI/CD -</strong>
+              Built GitHub Actions pipelines to containerize and deploy my personal
+              site and NIDS services directly to the cluster.
+            </p>
+            <p>
+              <strong>Next step -</strong>
+              I am planning to expand the platform with AWS integrations to
+              keep improving reliability and add storage for long-term data retention.
+            </p>
+            <div class="tech-tags" aria-label="Tech stack">
+              <span class="tech-tag">Kubernetes</span>
+              <span class="tech-tag">K3s</span>
+              <span class="tech-tag">GitOps</span>
+              <span class="tech-tag">ArgoCD</span>
+              <span class="tech-tag">GitHub Actions</span>
+              <span class="tech-tag">Ubuntu Server</span>
+              <span class="tech-tag">AWS</span>
+            </div>
+          </article>
+
+          <article class="project-entry">
+            <h3 class="project-entry-title">
+              Deep Learning-Based Network Intrusion Detection System
+            </h3>
+            <p>
+              Trained and validated a multi-layer perceptron on more than 9 million
+              traffic-flow rows for multi-class attack detection, reaching F1 scores
+              above 0.97 across major classes on a held-out test set of over
+              2 million samples.
+            </p>
+            <p>
+              <strong>Pipeline -</strong>
+              Built a real-time traffic classification pipeline and dashboard with
+              Zeek and FastAPI that processes more than 2 million packets weekly.
+            </p>
+            <p>
+              <strong>Deployment -</strong>
+              Deployed the system on my Kubernetes homelab platform.
+              <a
+                href="https://nids.brendanmanley.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >View live deployment</a
+              >.
+            </p>
+            <div class="tech-tags" aria-label="Tech stack">
+              <span class="tech-tag">Deep Learning</span>
+              <span class="tech-tag">FastAPI</span>
+              <span class="tech-tag">Zeek</span>
+              <span class="tech-tag">Kubernetes</span>
+              <span class="tech-tag">Python</span>
             </div>
           </article>
         </section>
