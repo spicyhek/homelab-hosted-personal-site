@@ -3,7 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>brendanmanley.com</title>
+    <title>Brendan Manley | IT Automation &amp; Platform Engineering</title>
+    <meta
+      name="description"
+      content="Brendan Manley's personal site, professional experience, and self-hosted Kubernetes projects."
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -12,24 +16,24 @@
         <header class="topbar">
           <a class="brand" href="/" aria-label="Homepage">brendanmanley.com</a>
           <nav class="topnav" aria-label="Primary navigation">
-            <a href="#" aria-current="page">home</a>
-            <a href="#">about</a>
-            <a href="#">projects</a>
-            <a href="#">contact</a>
+            <a href="#about" aria-current="page">about</a>
+            <a href="#experience">experience</a>
+            <a href="#projects">projects</a>
+            <a href="#status">status</a>
           </nav>
         </header>
 
         <section class="hero">
-          <article class="panel intro-panel" aria-labelledby="intro-title">
+          <article class="panel intro-panel" id="about" aria-labelledby="intro-title">
             <h1 id="intro-title">Intro</h1>
             <p>
-              Hi! I'm Brendan. This site is hosted from my homelab, where I build and
-              run projects, services, and learn about infrastructure and platform engineering.
+              Hi! I'm Brendan. I build IT automation and self-hosted infrastructure, with a
+              focus on Kubernetes, observability, security, and platform engineering.
             </p>
             <p class="subtitle">
-              Welcome to my webpage.
+              This site is one of the services running on my three-node k3s homelab.
             </p>
-            <div class="intro-actions" aria-label="Social links">
+            <div class="intro-actions" aria-label="Social and resume links">
               <a
                 class="cta-button cta-button--icon"
                 href="https://github.com/spicyhek"
@@ -60,6 +64,13 @@
                 />
               </a
               >
+              <a
+                class="cta-button cta-button--resume cta-button--disabled"
+                aria-label="Resume download (coming soon)"
+                aria-disabled="true"
+                tabindex="-1"
+                >Download Resume</a
+              >
             </div>
           </article>
 
@@ -72,12 +83,16 @@
           </aside>
         </section>
 
-        <section class="panel experience-panel" aria-labelledby="experience-title">
+        <section
+          class="panel experience-panel"
+          id="experience"
+          aria-labelledby="experience-title"
+        >
           <h2 id="experience-title">Professional Experience</h2>
           <article class="project-entry experience-entry">
             <div class="experience-header">
               <h3 class="project-entry-title">
-                Incoming System Administration Intern - Intapp
+                System Administration Intern - Intapp
               </h3>
               <img
                 class="experience-logo"
@@ -86,82 +101,68 @@
               />
             </div>
             <p>
-              Incoming Summer 2026 intern with Intapp, a Palo Alto-based company.
-              I will be supporting systems administration and infrastructure operations
-              while learning production-scale platform practices.
-            </p>
-          </article>
-        </section>
-
-        <section class="panel projects-panel" aria-labelledby="projects-title">
-          <h2 id="projects-title">Projects</h2>
-
-          <article class="project-entry">
-            <h3 class="project-entry-title">Personal Site Observability Platform</h3>
-            <p>
-              This site runs on a Raspberry Pi homelab that I put together.
-              Every piece of the stack is containerized, monitored, and
-              designed to stay up with as little intervention as possible.
-            </p>
-            <p>
-              <strong>Infrastructure -</strong> 
-              Everything runs in containers, so the whole
-              environment is reproducible and each service is isolated from
-              the rest. If one container goes down, it doesn't take the
-              others down with it.
-            </p>
-            <p>
-              <strong>Security -</strong>              Traffic reaches the server through a Cloudflare Tunnel, which
-              means there are zero public-facing ports. That zero-trust
-              model has blocked over a hundred attempted network
-              intrusions so far.
-            </p>
-            <p>
-              <strong>Observability -</strong> 
-              Prometheus scrapes metrics from every service, Grafana turns
-              those numbers into dashboards I can read, and Loki
-              aggregates logs so I can search across containers in one place.
-            </p>
-            <p>
-              <strong>Alerting -</strong> 
-              Alertmanager and Blackbox Exporter probe the site from the
-              inside and outside. If something goes down, I know about it
-              within a minute, which is how uptime stays above 99.9%
-              weekly.
-            </p>
-            <div class="tech-tags" aria-label="Tech stack">
-              <span class="tech-tag">Ubuntu Server</span>
-              <span class="tech-tag">Docker</span>
-              <span class="tech-tag">Prometheus</span>
-              <span class="tech-tag">Grafana</span>
-              <span class="tech-tag">Alertmanager</span>
-              <span class="tech-tag">Loki</span>
-              <span class="tech-tag">Nginx</span>
-              <span class="tech-tag">Git</span>
-            </div>
-          </article>
-
-          <article class="project-entry">
-            <h3 class="project-entry-title">Kubernetes Homelab Platform</h3>
-            <p>
-              Migrated my single-node platform to a highly available k3s cluster,
-              improving fault tolerance and cutting service downtime by 60%
-              compared to the previous deployment.
+              Built, tested, and distributed two Claude-based IT automation integrations: a
+              Tier 1/Tier 2 operations toolkit for more than 10 IT staff and a self-service
+              integration spanning Freshservice, Microsoft 365, Confluence, and internal
+              knowledge sources for more than 3,000 employees.
             </p>
             <p>
               <strong>Automation -</strong>
-              Automated Kubernetes deployments with ArgoCD using a GitOps workflow,
-              which reduced manual rollouts and made infrastructure changes more reliable.
+              Used MCP-based tools with scoped permissions and human approval gates to automate
+              documentation retrieval, ticket triage, service requests, SLA escalations, runbook
+              drafting, and requester updates.
             </p>
             <p>
-              <strong>CI/CD -</strong>
-              Built GitHub Actions pipelines to containerize and deploy my personal
-              site and NIDS services directly to the cluster.
+              <strong>Operations -</strong>
+              Assisted with infrastructure and application-support incidents across Azure, Cato
+              Networks, Meraki, Okta, MFA/2FA, and SaaS access. Converted recurring fixes into
+              reusable SOPs and runbooks.
+            </p>
+            <div class="tech-tags" aria-label="Internship technologies">
+              <span class="tech-tag">Claude</span>
+              <span class="tech-tag">MCP</span>
+              <span class="tech-tag">Freshservice</span>
+              <span class="tech-tag">Microsoft 365</span>
+              <span class="tech-tag">Confluence</span>
+              <span class="tech-tag">Azure</span>
+              <span class="tech-tag">Okta</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel projects-panel" id="projects" aria-labelledby="projects-title">
+          <h2 id="projects-title">Projects</h2>
+
+          <article class="project-entry">
+            <h3 class="project-entry-title">Kubernetes Homelab &amp; Observability Platform</h3>
+            <p>
+              Migrated my single-node Docker platform to a highly available, three-node k3s
+              cluster, improving fault tolerance and cutting service downtime by 60% compared
+              with the previous deployment.
+            </p>
+            <p>
+              <strong>Infrastructure -</strong>
+              The personal site and its Kubernetes-aware status API run as replicated workloads.
+              Redundant Cloudflare Tunnel connectors provide ingress without exposing inbound
+              ports on my home network.
+            </p>
+            <p>
+              <strong>Automation -</strong>
+              ArgoCD continuously reconciles the cluster through a GitOps workflow. GitHub Actions
+              builds multi-architecture container images, publishes immutable tags to GHCR, and
+              updates the infrastructure repository to trigger deployments.
+            </p>
+            <p>
+              <strong>Observability -</strong>
+              Prometheus collects metrics, Grafana provides dashboards, and Promtail ships
+              Kubernetes logs to Loki. Blackbox Exporter, Uptime Kuma, and Alertmanager monitor
+              public services and send failure notifications to Discord.
             </p>
             <p>
               <strong>Next step -</strong>
-              I'm planning to expand the platform with AWS integrations to
-              keep improving reliability and add storage for long-term data retention.
+              I plan to build an AWS serverless reliability control plane that decouples
+              observability from the cluster nodes themselves, keeping health checks and alerting
+              available even when the homelab is degraded or offline.
             </p>
             <div class="tech-tags" aria-label="Tech stack">
               <span class="tech-tag">Kubernetes</span>
@@ -169,7 +170,9 @@
               <span class="tech-tag">GitOps</span>
               <span class="tech-tag">ArgoCD</span>
               <span class="tech-tag">GitHub Actions</span>
-              <span class="tech-tag">Ubuntu Server</span>
+              <span class="tech-tag">Prometheus</span>
+              <span class="tech-tag">Grafana</span>
+              <span class="tech-tag">Cloudflare Tunnel</span>
               <span class="tech-tag">AWS</span>
             </div>
           </article>
@@ -209,7 +212,7 @@
           </article>
         </section>
 
-        <section class="panel status-panel" aria-labelledby="status-title">
+        <section class="panel status-panel" id="status" aria-labelledby="status-title">
           <div class="status-heading-row">
             <h2 id="status-title">Server status</h2>
             <div class="server-badge" id="server-badge" aria-label="Serving node">
