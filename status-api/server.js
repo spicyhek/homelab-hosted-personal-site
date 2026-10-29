@@ -12,7 +12,6 @@ const REQUEST_TIMEOUT_MS = parsePositiveInt(process.env.REQUEST_TIMEOUT_MS, 5000
 const DEFAULT_TARGETS = [
   { name: "nids.brendanmanley.com", host: "nids.brendanmanley.com" },
   { name: "brendanmanley.com", host: "brendanmanley.com" },
-  { name: "grafana.brendanmanley.com", host: "grafana.brendanmanley.com" },
   { name: "status.brendanmanley.com", host: "status.brendanmanley.com" },
 ];
 

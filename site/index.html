@@ -28,7 +28,7 @@
             <h1 id="intro-title">Intro</h1>
             <p>
               Hi! I'm Brendan. I build IT automation and self-hosted infrastructure, with a
-              focus on Kubernetes, observability, resilience, and platform engineering.
+              focus on Kubernetes, GitOps, observability, resilience, and platform engineering.
             </p>
             <p class="subtitle">
               This site is one of the services running on my three-node k3s homelab.
@@ -154,15 +154,16 @@
             </p>
             <p>
               <strong>Observability -</strong>
-              Prometheus collects metrics, Grafana provides dashboards, and Promtail ships
-              Kubernetes logs to Loki. Blackbox Exporter, Uptime Kuma, and Alertmanager monitor
-              public services and send failure notifications to Discord.
+              Lightweight Grafana Alloy and node-exporter collectors send cluster telemetry to
+              Grafana Cloud, keeping storage and visualization outside the resource-constrained
+              cluster.
             </p>
             <p>
-              <strong>Next step -</strong>
-              I plan to build an AWS serverless reliability control plane that decouples
-              observability from the cluster nodes themselves, keeping health checks and alerting
-              available even when the homelab is degraded or offline.
+              <strong>Reliability -</strong>
+              An AWS serverless control plane runs external Lambda health probes, CloudWatch
+              alarms, and SNS notifications so availability checks remain independent of the
+              homelab. NIDS data is backed up to S3, while a host-level network watchdog and
+              K3s startup guard protect the control plane from wired-network failures.
             </p>
             <div class="tech-tags" aria-label="Tech stack">
               <span class="tech-tag">Kubernetes</span>
@@ -170,10 +171,12 @@
               <span class="tech-tag">GitOps</span>
               <span class="tech-tag">ArgoCD</span>
               <span class="tech-tag">GitHub Actions</span>
-              <span class="tech-tag">Prometheus</span>
-              <span class="tech-tag">Grafana</span>
+              <span class="tech-tag">Terraform</span>
+              <span class="tech-tag">AWS Lambda</span>
+              <span class="tech-tag">CloudWatch</span>
+              <span class="tech-tag">Grafana Cloud</span>
+              <span class="tech-tag">S3</span>
               <span class="tech-tag">Cloudflare Tunnel</span>
-              <span class="tech-tag">AWS</span>
             </div>
           </article>
 

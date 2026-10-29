@@ -39,4 +39,4 @@ This service exposes the homepage status payload at `GET /api/status`.
 - `STATUS_TARGETS_JSON`: JSON array of `{ "name": "...", "host": "...", "url": "..." }`
 - `STATUS_TARGETS`: comma-separated fallback if JSON is not provided
 
-If neither `STATUS_TARGETS_JSON` nor `STATUS_TARGETS` is set, the service probes all subdomains of the site (grafana.brendanmanley.com, status.brendanmanley.com etc)
+If neither `STATUS_TARGETS_JSON` nor `STATUS_TARGETS` is set, the service probes the site's public endpoints (including `nids.brendanmanley.com` and `status.brendanmanley.com`).
