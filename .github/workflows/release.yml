@@ -9,23 +9,29 @@ concurrency:
   group: personal-site-release
   cancel-in-progress: false
 
+env:
+  IMAGE_NAME: ghcr.io/spicyhek/homelab-hosted-personal-site
+  IMAGE_TAG: sha-${{ github.sha }}
+
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
 
+    outputs:
+      digest: ${{ steps.digest.outputs.digest }}
+      release_id: ${{ steps.release.outputs.id }}
+
     steps:
       - name: Check out app repository
         uses: actions/checkout@v4
 
-      - name: Set image name
-        run: echo "IMAGE_NAME=ghcr.io/spicyhek/homelab-hosted-personal-site" >> "$GITHUB_ENV"
-
-      - name: Set image tag
-        run: echo "IMAGE_TAG=sha-${GITHUB_SHA}" >> "$GITHUB_ENV"
+      - name: Set release ID
+        id: release
+        run: echo "id=personal-site/${GITHUB_SHA::7}/production/${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -40,7 +46,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: personal-site:smoke
+          platforms: linux/amd64
+
+      - name: Smoke test
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        run: |
+          set -euo pipefail
+
+          docker run --detach --name smoke --publish 127.0.0.1:8080:80 \
+            --env RELEASE_ID="${RELEASE_ID}" personal-site:smoke
+
+          curl --fail --silent --show-error \
+            --retry 10 --retry-all-errors --retry-delay 1 \
+            --dump-header headers.txt --output /dev/null \
+            http://127.0.0.1:8080/healthz
+
+          tr -d '\r' < headers.txt > headers.clean
+          grep -iqxF "x-release-id: ${RELEASE_ID}" headers.clean
+          grep -iqxF "cache-control: no-store" headers.clean
+
+          curl --fail --silent --show-error --output /dev/null http://127.0.0.1:8080/
+
+      - name: Push image
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -51,23 +87,37 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           platforms: linux/amd64,linux/arm64
 
-      - name: Check out infra repository
-        uses: actions/checkout@v4
-        with:
-          repository: spicyhek/homelab-infra
-          ref: main
-          token: ${{ secrets.INFRA_REPO_TOKEN }}
-          path: homelab-infra
-
-      - name: Update image tag in kustomization
-        working-directory: homelab-infra
-        run: |
-          sed -i "s|newTag: .*|newTag: ${IMAGE_TAG}|" k8s/apps/personal-site/kustomization.yml
-
-      - name: Commit and merge infra pull request
-        working-directory: homelab-infra
+      - name: Resolve digest
+        id: digest
         env:
-          GH_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          if [[ ! "${DIGEST}" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::Unexpected image digest: ${DIGEST}"
+            exit 1
+          fi
+          echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+
+  bump-gitops:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      DIGEST: ${{ needs.build.outputs.digest }}
+      RELEASE_ID: ${{ needs.build.outputs.release_id }}
+
+    outputs:
+      gitops_sha: ${{ steps.merge.outputs.gitops_sha }}
+
+    steps:
+      - name: Check out app repository
+        uses: actions/checkout@v4
+
+      - name: Check for newer commit
+        id: latest
         run: |
           set -euo pipefail
 
@@ -76,10 +126,66 @@ jobs:
             echo "::error::Could not determine the current personal-site main commit"
             exit 1
           fi
+
           if [ "${LATEST_SHA}" != "${GITHUB_SHA}" ]; then
             echo "Skipping superseded release ${GITHUB_SHA}; main is now ${LATEST_SHA}"
-            exit 0
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Check out infra repository
+        if: steps.latest.outputs.superseded == 'false'
+        uses: actions/checkout@v4
+        with:
+          repository: spicyhek/homelab-infra
+          ref: main
+          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          path: homelab-infra
+
+      - name: Pin image digest
+        if: steps.latest.outputs.superseded == 'false'
+        working-directory: homelab-infra/k8s/apps/personal-site
+        run: |
+          set -euo pipefail
+
+          sed -i -E "s#^([[:space:]]+)(newTag|digest): .*#\1digest: ${DIGEST}#" kustomization.yml
+          grep -qF "digest: ${DIGEST}" kustomization.yml
+
+          cat > release-patch.yml <<EOF
+          # Rewritten by the personal-site release workflow on every promotion.
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: personal-site
+            namespace: default
+            annotations:
+              mybuilds.brendanmanley.com/release-id: "${RELEASE_ID}"
+              mybuilds.brendanmanley.com/source-sha: "${GITHUB_SHA}"
+              mybuilds.brendanmanley.com/artifact-digest: "${DIGEST}"
+          spec:
+            template:
+              metadata:
+                annotations:
+                  mybuilds.brendanmanley.com/release-id: "${RELEASE_ID}"
+                  mybuilds.brendanmanley.com/source-sha: "${GITHUB_SHA}"
+                  mybuilds.brendanmanley.com/artifact-digest: "${DIGEST}"
+              spec:
+                containers:
+                  - name: web
+                    env:
+                      - name: RELEASE_ID
+                        value: "${RELEASE_ID}"
+          EOF
+
+      - name: Commit and open pull request
+        id: pr
+        if: steps.latest.outputs.superseded == 'false'
+        working-directory: homelab-infra
+        env:
+          GH_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -87,32 +193,63 @@ jobs:
           DEPLOY_BRANCH="deploy/personal-site-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -b "${DEPLOY_BRANCH}"
 
-          git add k8s/apps/personal-site/kustomization.yml
+          git add k8s/apps/personal-site/kustomization.yml k8s/apps/personal-site/release-patch.yml
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          git commit -m "Deploy personal-site ${IMAGE_TAG}"
+          git commit -m "Deploy personal-site ${IMAGE_TAG}" -m "Release-Id: ${RELEASE_ID}"
           git push --set-upstream origin "${DEPLOY_BRANCH}"
 
-          DEPLOY_COMMIT="$(git rev-parse HEAD)"
           PR_URL="$(gh pr create \
             --repo spicyhek/homelab-infra \
             --base main \
             --head "${DEPLOY_BRANCH}" \
             --title "Deploy personal-site ${IMAGE_TAG}" \
-            --body "Promotes personal-site image \`${IMAGE_TAG}\`. Generated by ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}.")"
+            --body "Promotes personal-site image \`${DIGEST}\`. Generated by ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}.")"
 
+          {
+            echo "changed=true"
+            echo "deploy_commit=$(git rev-parse HEAD)"
+            echo "pr_url=${PR_URL}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Squash merge
+        id: merge
+        if: steps.pr.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
+          DEPLOY_COMMIT: ${{ steps.pr.outputs.deploy_commit }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+        run: |
+          set -euo pipefail
+
+          # The subject format is counted by homelab-infra's reliability scorecard.
           gh pr merge "${PR_URL}" \
             --repo spicyhek/homelab-infra \
             --squash \
-            --match-head-commit "${DEPLOY_COMMIT}"
+            --match-head-commit "${DEPLOY_COMMIT}" \
+            --subject "Deploy personal-site ${IMAGE_TAG} (#${PR_URL##*/})" \
+            --body "Release-Id: ${RELEASE_ID}"
+
+          GITOPS_SHA="$(gh pr view "${PR_URL}" \
+            --repo spicyhek/homelab-infra \
+            --json mergeCommit \
+            --jq '.mergeCommit.oid')"
+          if [ -z "${GITOPS_SHA}" ]; then
+            echo "::error::Could not read the squash commit for ${PR_URL}"
+            exit 1
+          fi
+          echo "gitops_sha=${GITOPS_SHA}" >> "$GITHUB_OUTPUT"
 
           {
             echo "### personal-site image promoted"
-            echo "Image: \`${IMAGE_NAME}:${IMAGE_TAG}\`"
+            echo "Release: \`${RELEASE_ID}\`"
+            echo "Image: \`${IMAGE_NAME}@${DIGEST}\`"
+            echo "GitOps commit: \`${GITOPS_SHA}\`"
             echo "Merged infrastructure PR: ${PR_URL}"
             echo "Argo CD watches homelab-infra/main and will reconcile the new image."
           } >> "${GITHUB_STEP_SUMMARY}"
