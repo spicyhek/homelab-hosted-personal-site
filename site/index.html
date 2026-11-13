@@ -181,6 +181,51 @@
           </article>
 
           <article class="project-entry">
+            <h3 class="project-entry-title">mybuilds: Release Tracking for the Homelab</h3>
+            <p>
+              Built a self-hosted delivery tracker that follows each release of this site from
+              commit to image digest, GitOps commit, running pods, and a verified public response,
+              with every stage backed by its own evidence rather than a single green CI run.
+            </p>
+            <p>
+              <strong>Ingestion -</strong>
+              Receives HMAC-signed GitHub webhooks, CI events, and ArgoCD notifications, stores
+              each delivery once, and rebuilds release state from the event log, so duplicate or
+              out-of-order deliveries always produce the same result.
+            </p>
+            <p>
+              <strong>Runtime -</strong>
+              Read-only Kubernetes informers track each rollout pod by pod and confirm every pod
+              runs the exact image digest CI published. A built-in verifier then requires five
+              consecutive public checks through Cloudflare that serve the release's ID.
+            </p>
+            <p>
+              <strong>Platform -</strong>
+              A Go service with a React and TypeScript UI updated live over server-sent events.
+              It runs on the cluster it watches, with SQLite continuously replicated to S3 by
+              Litestream. Manual edits in the infrastructure repository are tracked as releases of
+              their own.
+              <a
+                href="https://mybuilds.brendanmanley.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >View live deployment</a
+              >.
+            </p>
+            <div class="tech-tags" aria-label="Tech stack">
+              <span class="tech-tag">Go</span>
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">Kubernetes</span>
+              <span class="tech-tag">ArgoCD</span>
+              <span class="tech-tag">GitHub Actions</span>
+              <span class="tech-tag">SQLite</span>
+              <span class="tech-tag">Litestream</span>
+              <span class="tech-tag">S3</span>
+            </div>
+          </article>
+
+          <article class="project-entry">
             <h3 class="project-entry-title">
               Deep Learning-Based Network Intrusion Detection System
             </h3>
