@@ -203,7 +203,7 @@
               <strong>Platform -</strong>
               A Go service with a React and TypeScript UI updated live over server-sent events.
               It runs on the cluster it watches, with SQLite continuously replicated to S3 by
-              Litestream. Manual edits in the infrastructure repository are tracked as releases of
+              Litestream. Uses AWS SQS for message queuing when the service is not available. Manual edits in the infrastructure repository are tracked as releases of
               their own.
               <a
                 href="https://mybuilds.brendanmanley.com"
